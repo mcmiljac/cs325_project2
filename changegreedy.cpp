@@ -26,8 +26,9 @@ struct change{
 
 /***************************************************************************************
  ** Function: changegreedy
- ** Description:
- ** Parameters:
+ ** Description: Making change with a greedy algorithm.
+ ** Parameters: Input: vector v, containing values of the coins and int amount, the amount of change we are asked to make.
+ **     Output: vector containing the number of coins of each value and int minimum, the number of coins
  ***************************************************************************************/
 struct change changegreedy(vector<int> v, int amount){
     struct change myChange;
@@ -38,6 +39,7 @@ struct change changegreedy(vector<int> v, int amount){
     int i;
     int m = 0;
     int j = 0;
+    int k = 0;
 
     while(tmpamt > 0) {
         i = 0;
@@ -51,10 +53,10 @@ struct change changegreedy(vector<int> v, int amount){
         tmpsize = tmpsize - 1;
     }
 
-    for (j = v.size(); j >= 1; j--) {
-        cout << j << ": " << tmpVect[j] << endl;
+    for (j = (v.size() - 1); j >= 0; j--) {
+        //cout << "Coin " << v[k] << ": " << tmpVect[j] << endl;
+        //k++;
         myChange.coins.push_back(tmpVect[j]);
-
     }
 
     myChange.minimum = m;
@@ -64,7 +66,7 @@ struct change changegreedy(vector<int> v, int amount){
 /***************************************************************************************
  ** Function: main
  ** Description: driver function to call algorithms on input
- ** Parameters:
+ ** Parameters: Command line execution which provides the input filename
  ***************************************************************************************/
 int main(int argc, char *args[]){
     string fileName, baseName, outputFile, inputStr;
