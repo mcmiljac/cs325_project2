@@ -3,12 +3,24 @@
 // Courtney Bonn, Jana Gallina, Jacob McMillen
 
 #include <iostream>
+using std::cout;
+using std::cin;
+using std::endl;
+
 #include <climits>
 #include <sstream>
 #include <fstream>
-#include <vector>
+using std::ifstream;
+using std::ofstream;
 
-using namespace std; 
+#include<string>
+using std::string;
+
+#include<vector>
+using std::vector;
+
+#include<algorithm>
+using std::min;
 
 struct change{
     vector<int> coins;
@@ -21,38 +33,42 @@ struct change{
  ** Parameters:
  ***************************************************************************************/
 struct change changeslow(vector<int> v, int amount){
-   struct change myChange;
-   int length = v.size();
-   int *tempArr = new int[amount + 1];
-   int tempMin = 0, i, j, k;
+    struct change myChange, tempChange1, tempChange2;
+    int length = v.size();
+    int tempMin;
 
-   tempArr[0] = 0;
-   for (i = 1; i <= amount; i++) {
-	tempMin = INT_MAX;
-	if (v[i] == amount) {
-		tempArr[i] = 1;
-		tempMin = 1;
+    // Initialize myChange.minimum and myChange.coins.
+    myChange.minimum = INT_MAX;
+    for(int i = 0; i < (int) v.size(); i++)
+        myChange.coins.push_back(0);
+
+    /* Check if any single coin value exactly equals the amount. If so, return min of 1.
+       Could do this with bin search since v is sorted to make slightly more efficient.
+    */
+    for (int i = 0; i < length; i++){
+        if (v[i] == amount){
+            myChange.minimum = 1;
+            myChange.coins[i]++;
+            return myChange;
         }
-	for (j = 0; j < length; j++) {
-		if (v[j] <= i) {
-			tempMin = min(tempMin, tempArr[i-v[j]]);
-		}
-	}
-	if (tempMin < INT_MAX) {
-		tempArr[i] = tempMin + 1;
-	} else {
-		tempArr[i] = INT_MAX;
-	}
-   }
+    }
 
-    tempMin = tempArr[amount];
-    for (k = 1; k <= length; k++){
-        myChange.coins.push_back(tempArr[k]);
-   }
-    myChange.minimum = tempMin;
+    /* If no single coin equals amount, recursively call changeslow on each possible pair
+       i and amount - i and determine their sum. Take the value i that minimizes the sum
+       and return value with corresponding coin vector.
+    */
+    for (int i = 1; i <= amount/2; i++){
+        tempChange1 = changeslow(v,i);
+        tempChange2 = changeslow(v,amount-i);
+        tempMin = tempChange1.minimum + tempChange2.minimum;
+        if(tempMin < myChange.minimum){
+            myChange.minimum = tempMin;
+            for(int j = 0; j < length; j++)
+                myChange.coins[j] = tempChange1.coins[j] + tempChange2.coins[j];
+        }
+    }
     return myChange;
 }
-
 
 /***************************************************************************************
  ** Function: main
@@ -90,10 +106,10 @@ int main(int argc, char *args[]){
     outFile.open(outputFile.c_str());
 
     // Read file line-by-line.
-    while (getline(inFile, inputStr))
+    while (std::getline(inFile, inputStr))
     {
         // Place integers into vector, ignoring commas, until closing brace is reached.
-        istringstream iss(inputStr);
+        std::istringstream iss(inputStr);
         iss.ignore();
         while (iss >> value){
             denominations.push_back(value);
@@ -108,8 +124,8 @@ int main(int argc, char *args[]){
             break;
         }
 
-        getline(inFile, inputStr);
-        istringstream iss2(inputStr);
+        std::getline(inFile, inputStr);
+        std::istringstream iss2(inputStr);
         iss2 >> amount;
 
         // Output the maximum sum subarray and display its sum.
@@ -126,10 +142,5 @@ int main(int argc, char *args[]){
     }
     inFile.close();
     outFile.close();
-  
-
-	
-
-
-  return 0;
+    return 0;
 }

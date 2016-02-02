@@ -19,6 +19,9 @@ using std::string;
 #include<vector>
 using std::vector;
 
+#include<algorithm>
+using std::min;
+
 struct change{
     vector<int> coins;
     int minimum;
@@ -32,41 +35,31 @@ struct change{
  ***************************************************************************************/
 struct change changegreedy(vector<int> v, int amount){
     struct change myChange;
-    int tmpsize = v.size() - 1;
 
-    int tmpamt = amount;
-    vector<int> tmpVect;
-    int i;
-    int m = 0;
-    int j = 0;
-    int k = 0;
+    // Initialize myChange.minimum and myChange.coins to zero.
+    myChange.minimum = 0;
+    for(int i = 0; i < (int) v.size(); i++)
+        myChange.coins.push_back(0);
 
-    while(tmpamt > 0) {
-        i = 0;
-        while(tmpamt >= v[tmpsize]) {
-            tmpamt = tmpamt - v[tmpsize];
-            i++;
-            m++;
+    /* Starting with largest coin value, repeated subtract this value from amount so long
+       as it remains positive. Repeat for each coin value moving from largest to
+       smallest. When a coin is subtracted, increase the minimum count and corresponding
+       entry in the myChange.coin vector.
+    */
+    for(int i = v.size() - 1; i >= 0; i--){
+        while (amount >= v[i]){
+            amount -= v[i];
+            myChange.coins[i]++;
+            myChange.minimum++;
         }
-        tmpVect.push_back(i);
-//        cout << tmpVect[i] << endl;
-        tmpsize = tmpsize - 1;
     }
-
-    for (j = (v.size() - 1); j >= 0; j--) {
-        //cout << "Coin " << v[k] << ": " << tmpVect[j] << endl;
-        //k++;
-        myChange.coins.push_back(tmpVect[j]);
-    }
-
-    myChange.minimum = m;
     return myChange;
 };
 
 /***************************************************************************************
  ** Function: main
  ** Description: driver function to call algorithms on input
- ** Parameters: Command line execution which provides the input filename
+ ** Parameters:
  ***************************************************************************************/
 int main(int argc, char *args[]){
     string fileName, baseName, outputFile, inputStr;
