@@ -19,6 +19,9 @@ using std::string;
 #include<vector>
 using std::vector;
 
+#include<algorithm>
+using std::min;
+
 struct change{
     vector<int> coins;
     int minimum;
@@ -49,19 +52,23 @@ struct change changedp(vector<int> v, int amount){
                 tempCol = j;
             }
         }
+		// If tempMin has been changed, fill in row values by copying the row that was
+		// referenced and incrementing the appropriate value by 1.
         if(tempMin < INT_MAX){
             table[i][0] = tempMin;
             for (int j=1; j<= length; j++)
                 table[i][j] = table[tempRow][j];
             table[i][tempCol]++;
         }
-        else {
+        // otherwise, fill the rest of the row with zeros
+		else {
             table[i][0] = -1;
             for (int j=1; j<= length; j++)
                 table[i][j] = 0;
         }
     }
 
+	// Copy file row from table into myChange struct and return
     for (int j = 1; j <= length; j++)
         myChange.coins.push_back(table[amount][j]);
     myChange.minimum = table[amount][0];
